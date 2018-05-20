@@ -1,0 +1,38 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
+sender="xxx@qq.com"
+passwd="xxx"
+host_name="smtp.qq.com"
+geter=["xxx@qq.com"]
+
+msg=MIMEMultipart()
+msg["From"]=sender
+msg["Subject"]=input("请输入邮件主题：")
+msg_content=input("请输入邮件内容：")
+msg.attach(MIMEText(msg_content,"plain","utf-8"))
+
+with open(u"D://abc.jpg","rb") as f:
+    att=MIMEBase("image","jpg",filename="beauty.jpg")
+    att.add_header("Content-Disposition","attachment",filename="beatuty.jpg")
+    att.add_header("Content-ID","<0>")
+    att.add_header("X-Attachment-ID","0")
+    att.set_payload(f.read())
+    encoders.encode_base64(att)#
+    msg.attach(att)
+try:
+    s=smtplib.SMTP_SSL(host_name,465)
+    s.set_debuglevel(1)
+    s.login(sender,passwd)
+    for to in geter:
+        msg["To"]=to
+        s.sendmail(sender,to,msg.as_string())
+        s.quit()
+        print("发送成功！！！")
+except smtplib.SMTPException as e:
+        print("Failed,%s",e)
+
+input("按任意键退出...")
